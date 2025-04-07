@@ -1,0 +1,30 @@
+[project]
+name = "xlwings-rpc"
+version = "0.1.0"
+description = "JSON-RPC server for xlwings"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "xlwings>=0.33.11",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.27.0",
+    "pydantic>=2.0.0",
+    "python-multipart>=0.0.6",
+    "pandas>=2.2.3",
+    "numpy>=2.2.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "isort>=5.0.0",
+    "mypy>=1.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["xlwings_rpc"]

@@ -5,7 +5,11 @@ xlwingsのAppオブジェクトとAPI間のインターフェースを提供し�
 """
 from typing import Dict, List, Optional, Any, Union
 import xlwings as xw
+import logging
 from xlwings_rpc.utils.converters import to_serializable
+
+# ロガーの設定
+logger = logging.getLogger(__name__)
 
 
 class AppAdapter:
@@ -42,7 +46,16 @@ class AppAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                logger.debug(f"Attempting to get Excel app with PID: {pid}")
+                try:
+                    # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                except Exception as e:
+                    logger.exception(f"Error accessing Excel app with PID {pid}: {str(e)}")
+                    raise
             else:
                 # アクティブなアプリケーションを取得、なければ新規作成
                 try:
@@ -87,11 +100,34 @@ class AppAdapter:
             ValueError: 指定されたPIDのアプリケーションが見つからない場合
         """
         try:
-            app = xw.App(pid=pid)
-            app.quit(save_changes)
+            # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+            try:
+                app = xw.apps[pid]
+            except KeyError:
+                # PIDが見つからない場合
+                raise ValueError(f"No Excel application found with PID {pid}")
+
+            # 変更を保存する場合は、quit()の前に明示的に保存
+            if save_changes:
+                try:
+                    # 開いているブックをすべて保存
+                    for book in app.books:
+                        if book.path:  # パスがある（保存済みのブック）の場合
+                            book.save()
+                except Exception as e:
+                    logger.warning(f"Failed to save books before quitting: {str(e)}")
+            
+            # 公式ドキュメントによると、quit()は引数を取らない
+            app.quit()  # 引数なしで呼び出し
             return True
         except Exception as e:
-            raise ValueError(f"Failed to quit Excel application: {str(e)}")
+            # 終了に失敗した場合、killメソッドを試す
+            logger.warning(f"Failed to quit Excel application: {str(e)}. Trying kill() method...")
+            try:
+                app.kill()
+                return True
+            except Exception as e2:
+                raise ValueError(f"Failed to quit Excel application: {str(e)}. Kill attempt also failed: {str(e2)}")
     
     @staticmethod
     def set_calculation(pid: int, calculation_mode: str) -> Dict[str, Any]:
@@ -113,7 +149,13 @@ class AppAdapter:
             raise ValueError(f"Invalid calculation mode. Valid values are: {', '.join(valid_modes)}")
         
         try:
-            app = xw.App(pid=pid)
+            try:
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                app = xw.apps[pid]
+            except KeyError:
+                # PIDが見つからない場合
+                raise ValueError(f"No Excel application found with PID {pid}")
+            
             app.calculation = calculation_mode.lower()
             return to_serializable(app)
         except Exception as e:
@@ -134,7 +176,13 @@ class AppAdapter:
             ValueError: 指定されたPIDのアプリケーションが見つからない場合
         """
         try:
-            app = xw.App(pid=pid)
+            try:
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                app = xw.apps[pid]
+            except KeyError:
+                # PIDが見つからない場合
+                raise ValueError(f"No Excel application found with PID {pid}")
+            
             return str(app.calculation)
         except Exception as e:
             raise ValueError(f"Failed to get calculation mode: {str(e)}")
@@ -154,7 +202,13 @@ class AppAdapter:
             ValueError: 指定されたPIDのアプリケーションが見つからない場合
         """
         try:
-            app = xw.App(pid=pid)
+            try:
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                app = xw.apps[pid]
+            except KeyError:
+                # PIDが見つからない場合
+                raise ValueError(f"No Excel application found with PID {pid}")
+            
             return [to_serializable(book) for book in app.books]
         except Exception as e:
             raise ValueError(f"Failed to get workbooks: {str(e)}")

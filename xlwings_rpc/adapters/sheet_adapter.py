@@ -4,8 +4,12 @@ Excel Sheetアダプター
 xlwingsのSheetオブジェクトとAPI間のインターフェースを提供します。
 """
 from typing import Dict, List, Optional, Any, Union
+import logging
 import xlwings as xw
 from xlwings_rpc.utils.converters import to_serializable
+
+# ロガーの設定
+logger = logging.getLogger(__name__)
 
 
 class SheetAdapter:
@@ -30,7 +34,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -61,7 +71,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -97,7 +113,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -135,7 +157,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -170,7 +198,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -203,7 +237,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -236,7 +276,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -269,7 +315,13 @@ class SheetAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)

@@ -5,8 +5,12 @@ xlwingsのBookオブジェクトとAPI間のインターフェースを提供し
 """
 from typing import Dict, List, Optional, Any, Union
 import os
+import logging
 import xlwings as xw
 from xlwings_rpc.utils.converters import to_serializable
+
+# ロガーの設定
+logger = logging.getLogger(__name__)
 
 
 class BookAdapter:
@@ -28,7 +32,13 @@ class BookAdapter:
         books = []
         if pid is not None:
             try:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 for book in app.books:
                     books.append(to_serializable(book))
             except Exception as e:
@@ -57,7 +67,13 @@ class BookAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -93,7 +109,13 @@ class BookAdapter:
         
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books.open(path, read_only=read_only, password=password)
             else:
                 # アクティブなアプリケーションを使用するか、新しいアプリケーションを作成
@@ -123,7 +145,13 @@ class BookAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books.add()
             else:
                 # アクティブなアプリケーションを使用するか、新しいアプリケーションを作成
@@ -164,7 +192,13 @@ class BookAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -198,7 +232,13 @@ class BookAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
@@ -232,7 +272,13 @@ class BookAdapter:
         """
         try:
             if pid is not None:
-                app = xw.App(pid=pid)
+                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
+                try:
+                    app = xw.apps[pid]
+                except KeyError:
+                    # PIDが見つからない場合
+                    raise ValueError(f"No Excel application found with PID {pid}")
+                
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)

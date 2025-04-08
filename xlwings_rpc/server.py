@@ -14,6 +14,7 @@ from xlwings_rpc.utils.errors import (
     PARSE_ERROR, INVALID_REQUEST, METHOD_NOT_FOUND,
     create_error_response, handle_exception
 )
+from xlwings_rpc.utils.json_encoder import json_dumps  # 新しいインポート
 from xlwings_rpc.methods.app import AppMethods
 from xlwings_rpc.methods.book import BookMethods
 from xlwings_rpc.methods.sheet import SheetMethods
@@ -182,17 +183,19 @@ async def handle_rpc(request: Request) -> Response:
             if response_data is None:
                 return Response(status_code=204)
         
-        # レスポンスの返却
+        # レスポンスの返却 - 修正部分: カスタムJSONエンコーダーを使用
         return Response(
-            content=str(response_data).replace("'", '"'),
+            # str()とreplaceの代わりにカスタムエンコーダーを使用
+            content=json_dumps(response_data),
             media_type="application/json"
         )
     except Exception as e:
         # JSONパースエラーなど
         logger.exception(f"Error processing RPC request: {str(e)}")
         response_data = create_error_response(PARSE_ERROR, id=None)
+        # エラーレスポンスもカスタムエンコーダーを使用
         return Response(
-            content=str(response_data).replace("'", '"'),
+            content=json_dumps(response_data),
             media_type="application/json"
         )
 

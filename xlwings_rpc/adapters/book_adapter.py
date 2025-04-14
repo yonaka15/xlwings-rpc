@@ -230,27 +230,36 @@ class BookAdapter:
         Raises:
             ValueError: ワークブックが見つからないか保存できない場合
         """
+        book = None
         try:
+            # 1. まずブックを取得する
             if pid is not None:
-                # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
                 try:
                     app = xw.apps[pid]
                 except KeyError:
-                    # PIDが見つからない場合
                     raise ValueError(f"No Excel application found with PID {pid}")
                 
                 book = app.books[book_identifier]
             else:
                 book = xw.Book(book_identifier)
             
+            # 2. ブックを保存する（この時点でブックの情報をシリアル化）
+            book_info = to_serializable(book)
+            
+            # 3. 保存処理を実行
+            logger.debug(f"Saving workbook '{book_identifier}'{' to ' + path if path else ''}")
             if path:
                 book.save(path=path)
             else:
                 book.save()
             
-            return to_serializable(book)
+            # 4. 保存に成功したブックの情報を返す
+            return book_info
+            
         except Exception as e:
-            raise ValueError(f"Failed to save workbook '{book_identifier}': {str(e)}")
+            error_msg = f"Failed to save workbook '{book_identifier}': {str(e)}"
+            logger.error(error_msg)
+            raise ValueError(error_msg)
     
     @staticmethod
     def get_book_sheets(

@@ -5,10 +5,11 @@ xlwingsのRangeオブジェクトとAPI間のインターフェースを提供�
 """
 from typing import Dict, List, Optional, Any, Union, Tuple
 import logging
+import json
 import xlwings as xw
 import pandas as pd
 import numpy as np
-from xlwings_rpc.utils.converters import to_serializable
+from xlwings_rpc.utils.converters import to_serializable, from_json_value
 
 # ロガーの設定
 logger = logging.getLogger(__name__)
@@ -102,6 +103,30 @@ class RangeAdapter:
             raise ValueError(f"Failed to get value of range '{address}' from sheet '{sheet_identifier}' in workbook '{book_identifier}': {str(e)}")
     
     @staticmethod
+    def decode_json_string(value: Any) -> Any:
+        """
+        文字列化されたJSONを検出して変換します。
+        
+        Args:
+            value: 変換する値
+            
+        Returns:
+            変換された値
+        """
+        if isinstance(value, str):
+            try:
+                # JSONとして解析を試みる
+                decoded = json.loads(value)
+                logger.debug(f"Successfully decoded JSON string: {value[:100]}...")
+                return decoded
+            except (json.JSONDecodeError, ValueError):
+                # 通常の文字列はそのまま返す
+                return value
+        
+        # 文字列以外はそのまま返す
+        return value
+    
+    @staticmethod
     def set_range_value(
         book_identifier: str, 
         sheet_identifier: Union[str, int], 
@@ -126,6 +151,11 @@ class RangeAdapter:
             ValueError: ワークブック、シート、範囲が見つからない場合
         """
         try:
+            # 文字列化されたJSONの検出と変換
+            value = RangeAdapter.decode_json_string(value)
+            
+            logger.debug(f"Setting value type: {type(value)}, value: {value}")
+            
             if pid is not None:
                 # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
                 try:
@@ -211,6 +241,9 @@ class RangeAdapter:
             ValueError: ワークブック、シート、範囲が見つからない場合
         """
         try:
+            # 文字列化されたJSONの検出と変換
+            formula = RangeAdapter.decode_json_string(formula)
+            
             if pid is not None:
                 # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
                 try:
@@ -347,6 +380,9 @@ class RangeAdapter:
             ValueError: ワークブック、シート、範囲が見つからない場合
         """
         try:
+            # 文字列化されたJSONの検出と変換
+            dataframe = RangeAdapter.decode_json_string(dataframe)
+            
             if pid is not None:
                 # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
                 try:

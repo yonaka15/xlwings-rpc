@@ -19,6 +19,7 @@ from xlwings_rpc.methods.app import AppMethods
 from xlwings_rpc.methods.book import BookMethods
 from xlwings_rpc.methods.sheet import SheetMethods
 from xlwings_rpc.methods.range import RangeMethods
+from xlwings_rpc.methods.chart import ChartMethods
 
 
 # ロガーの設定
@@ -79,6 +80,17 @@ method_dispatcher = {
     "range.clear": RangeMethods.clear,
     "range.get_as_dataframe": RangeMethods.get_as_dataframe,
     "range.set_dataframe": RangeMethods.set_dataframe,
+    
+    # Chart メソッド
+    "chart.list": ChartMethods.list,
+    "chart.get": ChartMethods.get,
+    "chart.add": ChartMethods.add,
+    "chart.delete": ChartMethods.delete,
+    "chart.set_source_data": ChartMethods.set_source_data,
+    "chart.set_chart_type": ChartMethods.set_chart_type,
+    "chart.export_as_pdf": ChartMethods.export_as_pdf,
+    "chart.export_as_picture": ChartMethods.export_as_picture,
+    "chart.customize": ChartMethods.customize,
 }
 
 

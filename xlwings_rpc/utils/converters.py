@@ -241,6 +241,60 @@ def to_serializable(obj: Any) -> Any:
         
         return range_data
     
+    # xlwings Chart オブジェクトの変換
+    if isinstance(obj, xw.Chart):
+        chart_data = {}
+        
+        try:
+            chart_data["name"] = obj.name
+        except Exception as e:
+            chart_data["name"] = "unknown"
+            logger.warning(f"Error getting chart name: {str(e)}")
+        
+        try:
+            chart_data["chart_type"] = obj.chart_type
+        except Exception as e:
+            chart_data["chart_type"] = "unknown"
+            logger.warning(f"Error getting chart type: {str(e)}")
+        
+        try:
+            # シートとブックの情報
+            if obj.parent:
+                chart_data["sheet_name"] = obj.parent.name
+                if obj.parent.book:
+                    chart_data["book_name"] = obj.parent.book.name
+        except Exception as e:
+            chart_data["sheet_name"] = None
+            chart_data["book_name"] = None
+            logger.warning(f"Error getting chart parent info: {str(e)}")
+        
+        # 位置と大きさの情報
+        try:
+            chart_data["left"] = obj.left
+        except Exception as e:
+            chart_data["left"] = None
+            logger.warning(f"Error getting chart left position: {str(e)}")
+        
+        try:
+            chart_data["top"] = obj.top
+        except Exception as e:
+            chart_data["top"] = None
+            logger.warning(f"Error getting chart top position: {str(e)}")
+        
+        try:
+            chart_data["width"] = obj.width
+        except Exception as e:
+            chart_data["width"] = None
+            logger.warning(f"Error getting chart width: {str(e)}")
+        
+        try:
+            chart_data["height"] = obj.height
+        except Exception as e:
+            chart_data["height"] = None
+            logger.warning(f"Error getting chart height: {str(e)}")
+        
+        return chart_data
+    
     # その他のオブジェクトは文字列に変換
     return str(obj)
 

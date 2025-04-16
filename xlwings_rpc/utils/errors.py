@@ -23,6 +23,8 @@ RANGE_ERROR = -32003
 EXCEL_ERROR = -32004
 PERMISSION_ERROR = -32005
 TIMEOUT_ERROR = -32006
+CHART_NOT_FOUND = -32007
+CHART_TYPE_ERROR = -32008
 
 # エラーメッセージ
 ERROR_MESSAGES = {
@@ -38,6 +40,8 @@ ERROR_MESSAGES = {
     EXCEL_ERROR: "Excel error",
     PERMISSION_ERROR: "Permission denied",
     TIMEOUT_ERROR: "Operation timed out",
+    CHART_NOT_FOUND: "Chart not found",
+    CHART_TYPE_ERROR: "Invalid chart type",
 }
 
 
@@ -106,8 +110,14 @@ def handle_exception(
         code = WORKBOOK_NOT_FOUND
         message = f"File not found: {str(exception)}"
     elif isinstance(exception, ValueError):
-        code = INVALID_PARAMS
+        # ValueErrorの内容に応じてエラーコードを決定
         message = str(exception)
+        if "Chart" in message and "not found" in message:
+            code = CHART_NOT_FOUND
+        elif "chart type" in message:
+            code = CHART_TYPE_ERROR
+        else:
+            code = INVALID_PARAMS
     elif isinstance(exception, PermissionError):
         code = PERMISSION_ERROR
         message = str(exception)

@@ -117,7 +117,7 @@ class RangeAdapter:
             try:
                 # JSONとして解析を試みる
                 decoded = json.loads(value)
-                logger.debug(f"Successfully decoded JSON string: {value[:100]}...")
+                logger.error(f"Successfully decoded JSON string: {value[:100]}...")
                 return decoded
             except (json.JSONDecodeError, ValueError):
                 # 通常の文字列はそのまま返す
@@ -154,7 +154,7 @@ class RangeAdapter:
             # 文字列化されたJSONの検出と変換
             value = RangeAdapter.decode_json_string(value)
             
-            logger.debug(f"Setting value type: {type(value)}, value: {value}")
+            logger.error(f"Setting value type: {type(value)}, value: {value}")
             
             if pid is not None:
                 # 最新のxlwingsのAPIでは、appsコレクションから直接アクセスする
